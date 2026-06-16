@@ -1,5 +1,8 @@
 e-comerce-backend/node_modules
 e-comerce-frontend/node_modules
+e-comerce-backend/dist
 e-comerce-frontend/dist
 
 .env
+**/.env
+!.env.example
