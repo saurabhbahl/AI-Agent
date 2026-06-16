@@ -6,9 +6,13 @@ import { UserRole, JwtPayload } from '../types';
 declare global {
   namespace Express {
     interface Request {
-      user?: JwtPayload;
+      user?: JwtPayload | undefined;
     }
   }
+}
+
+export interface AuthRequest extends Request {
+  user: JwtPayload;
 }
 
 export const authenticate = (req: Request, _res: Response, next: NextFunction): void => {
