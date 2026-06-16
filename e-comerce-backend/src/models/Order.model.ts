@@ -17,6 +17,7 @@ export interface IPaymentResult {
 }
 
 export interface IOrder extends Document {
+  orderNumber: string;
   user: Types.ObjectId;
   orderItems: IOrderItem[];
   shippingAddress: Address;
@@ -59,6 +60,13 @@ const addressSchema = new Schema<Address>(
 
 const orderSchema = new Schema<IOrder>(
   {
+    orderNumber: {
+      type: String,
+      unique: true,
+      required: true,
+      index: true,
+      default: () => `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    },
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     orderItems: { type: [orderItemSchema], required: true },
     shippingAddress: { type: addressSchema, required: true },

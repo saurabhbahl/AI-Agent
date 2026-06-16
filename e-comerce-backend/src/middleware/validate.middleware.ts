@@ -14,8 +14,8 @@ export const validate =
     } catch (error) {
       if (error instanceof ZodError) {
         const errors = error.errors.map((e) => `${e.path.join('.')}: ${e.message}`);
-        throw new BadRequestError('Validation failed', errors);
+        return next(new BadRequestError('Validation failed', errors));
       }
-      throw error;
+      return next(error);
     }
   };

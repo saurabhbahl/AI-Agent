@@ -37,15 +37,16 @@ export class ReviewService {
   }
 
   async deleteReview(reviewId: string, userId: string, isAdmin = false) {
-    const review = await reviewRepository.deleteById(reviewId);
+    const review = await reviewRepository.findById(reviewId);
     if (!review) throw new NotFoundError('Review not found');
     if (!isAdmin && review.user.toString() !== userId) {
       throw new NotFoundError('Review not found');
     }
 
+    const deletedReview = await reviewRepository.deleteById(reviewId);
     const { rating, count } = await reviewRepository.getAverageRating(review.product.toString());
     await productRepository.updateRating(review.product.toString(), rating, count);
-    return review;
+    return deletedReview;
   }
 }
 

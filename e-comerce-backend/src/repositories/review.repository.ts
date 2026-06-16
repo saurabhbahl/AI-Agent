@@ -23,6 +23,10 @@ export class ReviewRepository {
     return Review.findOne({ user: userId, product: productId });
   }
 
+  async findById(id: string): Promise<IReview | null> {
+    return Review.findById(id);
+  }
+
   async create(data: Partial<IReview>): Promise<IReview> {
     return Review.create(data);
   }

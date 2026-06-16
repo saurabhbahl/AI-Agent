@@ -1,12 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { ApiError } from '../utils/ApiError';
 import { env } from '../config/env';
 
 export const errorHandler = (
-  err: Error,
+  err: unknown,
   _req: Request,
   res: Response,
-  _next: NextFunction,
 ): void => {
   if (err instanceof ApiError) {
     res.status(err.statusCode).json({
@@ -17,10 +16,19 @@ export const errorHandler = (
     return;
   }
 
-  console.error('Unhandled error:', err);
+  if (err instanceof Error) {
+    console.error('Unhandled error:', err);
+    res.status(500).json({
+      success: false,
+      message: env.NODE_ENV === 'production' ? 'Internal server error' : err.message,
+    });
+    return;
+  }
+
+  console.error('Unknown error:', err);
   res.status(500).json({
     success: false,
-    message: env.NODE_ENV === 'production' ? 'Internal server error' : err.message,
+    message: 'Internal server error',
   });
 };
 
