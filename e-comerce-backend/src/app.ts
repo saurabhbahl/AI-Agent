@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import mongoose from 'mongoose';
 import { env } from './config/env';
 import { generalLimiter } from './middleware/rateLimit.middleware';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
@@ -31,7 +32,20 @@ app.use(cookieParser());
 app.use(generalLimiter);
 
 app.get('/api/health', (_req, res) => {
-  res.json({ success: true, message: 'API is running', timestamp: new Date().toISOString() });
+  const mongodbStatus = mongoose.connection.readyState;
+  const isConnected = mongodbStatus === 1; // readyState 1 means connected
+  
+  res.json({
+    success: true,
+    message: isConnected ? 'API is running and MongoDB is connected' : 'API is running but MongoDB is not connected',
+    timestamp: new Date().toISOString(),
+    database: {
+      status: isConnected ? 'connected' : 'disconnected',
+      host: isConnected ? mongoose.connection.host : null,
+      name: isConnected ? mongoose.connection.name : null,
+    },
+    environment: env.NODE_ENV,
+  });
 });
 
 app.use('/api/auth', authRoutes);
